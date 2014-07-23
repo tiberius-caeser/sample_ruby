@@ -1,21 +1,36 @@
 language: ruby
+
 rvm:
   - 1.8.7
   - 1.9.2
   - 1.9.3
   - 2.0.0-p353
-  - 2.1.0
-  - 2.1.1
+# - 2.1.0
+# - 2.1.1
   - 2.1.2
   - jruby
   - jruby-19mode # JRuby in 1.9 mode
   - jruby-head
   - ruby-head
   - ree
+
 env:
-  - CI_REPORTS=shippable/testresults COVERAGE_REPORTS=shippable/codecoverage
+  global:
+    - SLACK_ORG=shippable PROJECT=sample-ruby
+    - CI_REPORTS=shippable/testresults COVERAGE_REPORTS=shippable/codecoverage
+    - secure: UPAl+zXLdDyj/ORVB4N1p1+mukpfqJXV4KfvQ/hJDgYXnVj6tEUdDJd2aMlgXsGkSVzTF8dN39T46OIuKN7tnPMid3ugAysVZY4VObLBqwy8oAOt19xGorxyp1kzYqecJirQi4TTEphI/u+7Mx2plVuQ3srK9DwU0b76L4fHcrJrb/xmm5UDdao4SPGjZ+E/nmGC+Nwe+ch8wmwLNoHkV3qleJO2iLJBsj3Rz8tgNqrAFUsSA7QI/oNhqRLQvrempA7TsyIrN7aB/WFK8aewyW04Dxmywyn3wl4OCO8x3NcOdvHCba7f5anvvA/1KgP0L4paCXMvkf8F8Y1zcs7ETg==
+
+after_failure:
+  - python slack_notifier.py --project $PROJECT --org $SLACK_ORG --token $SLACK_TOKEN
+
+after_success:
+  - python slack_notifier.py --project $PROJECT --org $SLACK_ORG --token $SLACK_TOKEN -s
+
 notifications:
      email:
          recipients:
-             - exampleone@org.com
-             - exampletwo@org.com
+             - avniel+buildsample@shippable.com
+         on_success: never
+         on_failure: always
+
+reset_minion: true
